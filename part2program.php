@@ -10,8 +10,7 @@
 * TA(s): Tito Ferra and Josh Xiong
 * Due Date: November 23, 2020
 *
-* Description: Implement K-Clustering algorithm according to spec in 
-*	a new language.
+* Description: Implement K-Clustering algorithm according to spec in a new language (Php).
 *
 * Language: Php
 *
@@ -75,7 +74,7 @@ function parseFile($arg){
 * computeCentroids -- computes new centroids using datapoints from clusters
 * Params:	array $clusters
 *			int $k
-* Returns:	array $newcentroids
+* Returns:	array $newclusters
 */
 function computeCentroids($clusters, $k){
 
@@ -113,8 +112,7 @@ function computeCentroids($clusters, $k){
 }
 
 /*
-* assignNearestCluster -- assigns new clusters according to closest distance from datapoints
-*							to centroids
+* assignNearestCluster -- assigns new clusters according to closest distance from datapoints to centroids
 * Params:	array $data
 			array $centroids
 			int $n
@@ -160,7 +158,6 @@ function assignNearestCluster($data, $centroids, $n, $k){
 * Params:	array $data
 */
 function kClustering($data){
-	// retrieve k and n from $data and remove from array
 	$k = $data['k'];
 	$n = $data['n'];
 	unset($data['k']);
@@ -184,7 +181,7 @@ function kClustering($data){
 	while ($clusters !== $prev){
 		$prev = $clusters;
 		$centroids = computeCentroids($clusters, $k);
-		$clusters = assignNearestCluster($data, $clusters, $centroids, $n, $k);
+		$clusters = assignNearestCluster($data, $centroids, $n, $k);
 		$count++;
 	}
 
