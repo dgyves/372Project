@@ -1,3 +1,5 @@
+<?php
+
 /*
 * Assignment: Project #4, Part #2: K-Means Clustering
 *
@@ -8,18 +10,23 @@
 * TA(s): Tito Ferra and Josh Xiong
 * Due Date: November 23, 2020
 *
-* Description: Generate a geometric sequence.
+* Description: Implement K-Clustering algorithm according to spec in 
+*	a new language.
 *
 * Language: Php
+*
 * Ex. Packages: None.
 *
 * Deficiencies: None.
 *
 * PHP LANGUAGE STUDY: https://docs.google.com/document/d/1rb2q3LUCvGsNY121iZrpm8fKdRt_TUkKSnj6nsUQe-o/edit?usp=sharing
 */
-<?php
 
-function parseFile(array $arg){
+/*
+* parseFile -- parses a file passed from command line argument
+* Params: array $arg
+*/
+function parseFile($arg){
 	$i = 0;
 	$data = array();
 	
@@ -30,9 +37,10 @@ function parseFile(array $arg){
 	}
 
 	$filename = $arg[1];
+	// Open file or return error message
 	$myfile = fopen($filename, "r") or die("Unable to open file!");
 
-	// Output one line until end-of-file
+	// Read one line until end-of-file
 	while(!feof($myfile)) {
 		$line = fgets($myfile);
 		
@@ -63,6 +71,12 @@ function parseFile(array $arg){
 	return $data;
 }
 
+/*
+* computeCentroids -- computes new centroids using datapoints from clusters
+* Params:	array $clusters
+*			int $k
+* Returns:	array $newcentroids
+*/
 function computeCentroids($clusters, $k){
 
 	$newcentroids = array();
@@ -98,7 +112,16 @@ function computeCentroids($clusters, $k){
 	return $newcentroids;
 }
 
-function assignNearestCluster($data, $clusters, $centroids, $n, $k){
+/*
+* assignNearestCluster -- assigns new clusters according to closest distance from datapoints
+*							to centroids
+* Params:	array $data
+			array $centroids
+			int $n
+*			int $k
+* Returns:	array $newclusters
+*/
+function assignNearestCluster($data, $centroids, $n, $k){
 	$newclusters = array();
 	
 	// iterate through every data point
@@ -132,7 +155,12 @@ function assignNearestCluster($data, $clusters, $centroids, $n, $k){
 	return $newclusters;
 }
 
+/*
+* kClustering -- implements K-Means Clustering algorithm
+* Params:	array $data
+*/
 function kClustering($data){
+	// retrieve k and n from $data and remove from array
 	$k = $data['k'];
 	$n = $data['n'];
 	unset($data['k']);
