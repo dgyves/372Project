@@ -1,3 +1,22 @@
+/*
+* Assignment: Project #4, Part #2: K-Means Clustering
+*
+* Authors: Diego D'Gyves and Alex Buell
+*
+* Course: CSc 372
+* Instructor: L. McCann
+* TA(s): Tito Ferra and Josh Xiong
+* Due Date: November 23, 2020
+*
+* Description: Generate a geometric sequence.
+*
+* Language: Php
+* Ex. Packages: None.
+*
+* Deficiencies: None.
+*
+* PHP LANGUAGE STUDY: https://docs.google.com/document/d/1rb2q3LUCvGsNY121iZrpm8fKdRt_TUkKSnj6nsUQe-o/edit?usp=sharing
+*/
 <?php
 
 function parseFile(array $arg){
@@ -56,78 +75,50 @@ function computeCentroids($clusters, $k){
 		// reindex array to avoid index errors
 		$data = array_values($data);
 
-		//var_dump($data);
-		//echo sizeof($data) . "\n";
-
 		$totalx = 0;
 		$totaly = 0;
 
 		// for each datapoint in cluster
 		for ($p = 0; $p < $sized; $p++){
 
-			//array_values($data);
 			$datapoint = explode(" ", $data[$p]);
-			//array_values($datapoint);
-			//var_dump($datapoint);
-
 			$x = $datapoint[0];
 			$y = $datapoint[1];
-
-			//echo "\t x: " . $x ." y: " . $y . "\n";
-
+			
 			$totalx = $totalx + $x;
 			$totaly = $totaly + $y;
-
-			$datapoint = 0;
 		}
-
-		//echo $newx ." <- new total x, new total y -> " . $newy . "\n";
-
+		// multiply by inverse number of datapoints in cluster
 		$newx = (1/$sized) * ($totalx);
 		$newy = (1/$sized) * ($totaly);
 
-		//echo $newx ." <- new x, new y -> " . $newy . "\n\n";
-		
 		$newcentroids[$m] = $newx . " " . $newy;
 	}
 
-	//echo "new centroids are: ";
-	//var_dump($newcentroids);
 	return $newcentroids;
 }
 
 function assignNearestCluster($data, $clusters, $centroids, $n, $k){
-
 	$newclusters = array();
-	$data = array_values($data);
 	
 	// iterate through every data point
 	for ($i = 0; $i < $n; $i++){
 
 		$num = $data[$i];
 		$numformat = explode(" ",$num);
-		
-		//echo "num: " . $num . "\n";
-
 		$x = $numformat[0];
 		$y = $numformat[1];
 		
-		//echo "x: " . $x . " ";
-		//echo "y: " . $y . "\n";
-
-		$nearest = -1;
 		$prevdist = 10000000;
 
+		// iterate through every centroid to find nearest one
 		for ($j = 0; $j < $k; $j++){
 			$u = explode(" ",$centroids[$j]);
 			$ux = $u[0];
 			$uy = $u[1];
-			//echo "\t cluster C" . $j . " :";
-			//echo "\tux: " . $ux . " ";
-			//echo "\tuy: " . $uy . "\n";
 
-			$dist = (($x - $ux) ** 2) + (($y - $uy) ** 2);
-			//echo "\t\td: " . $dist . "\n";
+			// calculate squared Euclidean distance to data point
+			$dist = pow(($x - $ux),2) + pow(($y - $uy),2);
 
 			// compute cluster membership
 			if ($dist < $prevdist){
@@ -135,14 +126,8 @@ function assignNearestCluster($data, $clusters, $centroids, $n, $k){
 				$nearest = $j;
 			}
 		}
-
 		$newclusters[$nearest][] = $num;
-
-		//echo "nearest cluster: " . $nearest . "\n\n\n";
-
 	}
-
-	//var_dump($newclusters);
 
 	return $newclusters;
 }
@@ -152,47 +137,38 @@ function kClustering($data){
 	$n = $data['n'];
 	unset($data['k']);
 	unset($data['n']);
-	echo "k: " . $k . "\n";
-	echo "n: " . $n . "\n";
-	//var_dump($data);
 
-	$count = 1;
+	$count = 0;
 	$clusters = array();
 	$centroids = array();
 
 	// Select k data points and turn into cluster centroids
 	for ($i = 0; $i < $k; $i++){
 		$inner = array();
-		$inner[$i] = trim($data[$i], "\n");
+		$inner[$i] = $data[$i];
 		$clusters[$i] = $inner;
 		$centroids[$i] = $data[$i];
 	}
 	
-	//var_dump($clusters);
 	$prev = array();
 
 	// While clusters are not stable (array not equal to prev iteration)
-	while ($clusters !== $prev && $count != 6){
+	while ($clusters !== $prev){
 		$prev = $clusters;
-
-		echo "-------------- iteration " . $count . " --------------\n";
-
 		$centroids = computeCentroids($clusters, $k);
-
 		$clusters = assignNearestCluster($data, $clusters, $centroids, $n, $k);
-
 		$count++;
 	}
 
-	var_dump($centroids);
-	echo "The final centroid locations are:\n";
+	echo "The final centroid locations are:\n\n";
 
 	for ($c = 0; $c < sizeof($centroids); $c++){
-		echo "   u(" . $c . ") = (" . number_format($centroids[$c][0], 3, '.', ',') . ", " . $centroids[$c][1] . ")\n";
+		$u = explode(" ",$centroids[$c]);
+		$ux = $u[0];
+		$uy = $u[1];
+		echo "   u(" . ($c+1) . ") = (" . round($ux, 3) . ", " . round($uy,3) . ")\n";
 	}
-
-	echo $count . " iterations were required.";
-
+	echo "\n" . $count . " iterations were required.";
 }
 
 
