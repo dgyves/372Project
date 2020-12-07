@@ -1,5 +1,29 @@
-
 <?php
+/*
+* Assignment: Project #4, Part #3: NBA Awards
+*
+* Authors: Diego D'Gyves and Alex Buell
+*
+* Course: CSc 372
+* Instructor: L. McCann
+* TA(s): Tito Ferra and Josh Xiong
+* Due Date: December 7, 2020
+*
+* Description: Reads in CSV files containing the season leaders in multiple categories
+               to determine an NBA Most Valuable Player(MVP), Defensive Player of the
+               Year (DPOY), and Rookie of the Year (ROY).
+*
+* Language: Php
+*
+* Ex. Packages: None.
+*
+* Deficiencies: None.
+*
+* PHP LANGUAGE STUDY: https://docs.google.com/document/d/1rb2q3LUCvGsNY121iZrpm8fKdRt_TUkKSnj6nsUQe-o/edit?usp=sharing
+*/
+
+
+
 // First commit
 /*
 * parseFile -- parses a file passed from command line argument
