@@ -52,14 +52,6 @@ function parseFile($category){
 		if ($i == 0){
 			$categories = $data;
 
-<<<<<<< HEAD
-
-		// first line is the list of different categories
-		if ($i == 0){
-			$categories = $data;
-
-=======
->>>>>>> 2b7d4751c7927481858b5f23b7cad60c4f8bf3dd
 		// rest of file is player data
 		} else {
 			$players[] = $data;
