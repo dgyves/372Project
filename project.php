@@ -37,6 +37,7 @@ function parseFile($category){
 	} elseif($category == "MVP"){
 		$myfile = fopen("MVP.csv", "r") or die("Unable to open file!");
 	} elseif ($category == "ROY"){
+
 		$myfile = fopen("ROY.csv", "r") or die("Unable to open file!");
 	}
 	
@@ -59,18 +60,70 @@ function parseFile($category){
 		$i++;
 	}
 	fclose($myfile);
-
 	echo "\nCategories:\n";
 	//var_dump($categories);
-	for ($i = 2; $i < count($categories)-1; $i++){
+	for ($i = 2; $i < count($categories); $i++){
 		echo $categories[$i]."\n";
 	}
-	echo "\nPlayers:\n";
-	for ($i = 0; $i < count($players)-1; $i++){
+	echo "\nNominated Players:\n";
+	for ($i = 0; $i < count($players); $i++){
 		echo $players[$i][0]."\t".$players[$i][1]."\n";
+	}
+	$results = comp($players);
+	for($i = 0; $i < count($players); $i++){
+		if ($results[$players[$i][0]] == max(array_values($results))){
+			echo"\n\nThe winner of the 2019-2020 NBA " . $category . " is: " . $players[$i][0] . " from the " . $players[$i][1];
+		}
 	}
 }
 
+/**
+*
+*/
+function comp($players){
+	for($i = 0; $i < count($players); $i++){
+		$results[$players[$i][0]] = 0;
+	}
+	for ($i = 0; $i < count($players);$i++){
+		for ($j = $i+1; $j < count($players); $j++){
+			$winner = compare($players[$i], $players[$j]);
+			if($winner[0] > $winner[1]){
+				$results[$players[$i][0]] += 1;
+			}else{
+				$results[$players[$i+1][0]] += 1;
+			}
+		}
+	}
+	return $results;
+}		
+	
+function compare ($player1, $player2){
+	$playerComp[0] = 0;
+	$playerComp[1] = 0;
+
+	for($i = 2; $i < count($player1); $i++){
+		
+		if($player1[$i] > $player2[$i]){
+			//Player 1 Won
+			$playerComp[0] += 1;
+		}
+		elseif($player1[$i] == $player2[$i]){
+			//Both Won!
+			$playerComp[0] += 1;
+			$playerComp[1] += 1;
+
+		}else{
+			//Player 2 Won!
+			$playerComp[1] += 1;
+		}
+	}
+	//print_r($playerComp);
+	return $playerComp;
+}
+
+/**
+*
+*/
 function getTeams(){
 	$curl = curl_init();
 	$url = "https://www.balldontlie.io/api/v1/teams";
@@ -86,6 +139,9 @@ function getTeams(){
 	return $result->data;
 }
 
+/**
+*
+*/
 function getPlayers($page){
 	$curl = curl_init();
 	$url = "https://www.balldontlie.io/api/v1/players?per_page=10&page=".$page;
@@ -102,7 +158,6 @@ function getPlayers($page){
 	return $result->data;
 }
 
-
 // MAIN SCRIPT
 echo "Welcome to the 2019-2020 NBA Awards. The following awards are:
 \n1. Most Valuable Player (Enter MVP)\n2. Defensive Player of the Year (Enter DPOY)
@@ -113,15 +168,23 @@ $categories = [];
 $players = [];
 parseFile($category, $categories, $players);
 
-$all_teams = getTeams();
+//echo "\nCategories:\n";
+	//var_dump($categories);
+//	for ($i = 2; $i < count($categories)-1; $i++){
+//		echo $categories[$i]."\n";
+//	}
+//	echo "\nPlayers:\n";
+//	for ($i = 0; $i < count($players)-1; $i++){
+//		echo $players[$i][0]."\t".$players[$i][1]."\n";
+//	}
+//}
 
+$all_teams = getTeams();
 
 //Check for season averages
 //https://www.balldontlie.io/api/v1/season_averages
 //?season=2018 //specific season
 //"https://www.balldontlie.io/api/v1/season_averages?player_ids[]=237" //Lebron Averages
-
-
 
 $command = "none";
 $page = 1;
