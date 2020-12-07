@@ -65,7 +65,7 @@ function parseFile($category){
 	fclose($myfile);
 	echo "\nCategories:\n";
 	//var_dump($categories);
-	for ($i = 2; $i < count($categories)-1; $i++){
+	for ($i = 2; $i < count($categories); $i++){
 		echo $categories[$i]."\n";
 	}
 	echo "\nNominated Players:\n";
