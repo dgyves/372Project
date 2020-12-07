@@ -30,64 +30,118 @@
 * Params: array $arg
 */
 function parseFile($category){
-	$i = 0;
-	$data = array();
+	$myfile = "MVP.csv";	//default
 	
-	// Ask user for what stats to calculate
-	//if (sizeof($arg) != 2){
-	//	echo "Please only include a file name.\n";
-	//	die;
-	//}
-
-	$filename = $arg[1];
 	// Open file or return error message
-	//$myfile = fopen($filename+".csv", "r") or die("Unable to open file!");
 	if($category == "DPOY"){
 		$myfile = fopen("DPOY.csv", "r") or die("Unable to open file!");
-
 	} 
 	if($category == "MVP"){
 		$myfile = fopen("MVP.csv", "r") or die("Unable to open file!");
-
-
 	}
 	if ($category == "ROY"){
 		$myfile = fopen("ROY.csv", "r") or die("Unable to open file!");
-
 	}
 	
-	
+	$i = 0;
 
 	// Read one line until end-of-file
 	while(!feof($myfile)) {
-		//$line = fgets($myfile);
 		
-		// print file name
-		print_r(fgetcsv($myfile));
+		$data = fgetcsv($myfile);
 
+		// first line is the list of different categories
+		if ($i == 0){
+			$categories = $data;
+
+		// rest of file is player data
+		} else {
+			$players[] = $data;
+		}
+
+		//var_dump($data);
 		$i++;
 	}
 	fclose($myfile);
-
-	// check for error case k > n
-	if($k > $n){
-		die("Error: 'k' cannot be greater than 'n'.\n");
+	echo "\nCategories:\n";
+	//var_dump($categories);
+	for ($i = 2; $i < count($categories)-1; $i++){
+		echo $categories[$i]."\n";
 	}
+	echo "\nNominated Players:\n";
+	for ($i = 0; $i < count($players)-1; $i++){
+		echo $players[$i][0]."\t".$players[$i][1]."\n";
+	}
+	$results = comp($players);
+	for($i = 0; $i < count($players); $i++){
+		if ($results[$players[$i][0]] == max(array_values($results))){
+			echo"\n\nThe winner of the 2019-2020 NBA " . $category . " is: " . $players[$i][0] . " from the " . $players[$i][1];
+		}
+	}
+}
+function comp($players){
+	for($i = 0; $i < count($players); $i++){
+		$results[$players[$i][0]] = 0;
+	}
+	for ($i = 0; $i < count($players);$i++){
+		for ($j = $i+1; $j < count($players); $j++){
+			$winner = compare($players[$i], $players[$j]);
+			if($winner[0] > $winner[1]){
+				$results[$players[$i][0]] += 1;
+			}else{
+				$results[$players[$i+1][0]] += 1;
+			}
+		}
+	}
+		return $results;
 
-	return $data;
+	}
+	
+	
+
+	
+
+	//print_r($results);
+	//print_r($stats);
+	//echo(max(array_values($stats)));
+	
+
+function compare ($player1, $player2){
+	$playerComp[0] = 0;
+	$playerComp[1] = 0;
+
+	for($i = 2; $i < count($player1); $i++){
+		
+		if($player1[$i] > $player2[$i]){
+			//Player 1 Won
+			$playerComp[0] += 1;
+		}
+		elseif($player1[$i] == $player2[$i]){
+			//Both Won!
+			$playerComp[0] += 1;
+			$playerComp[1] += 1;
+
+		}else{
+			//Player 2 Won!
+			$playerComp[1] += 1;
+
+		}
+
+	}
+	//print_r($playerComp);
+	return $playerComp;
 }
 
-// MAIN SCRIPT
 
+// MAIN SCRIPT
 echo "Welcome to the 2019-2020 NBA Awards. The following awards are:
 \n1. Most Valuable Player (Enter MVP)\n2. Defensive Player of the Year (Enter DPOY)
 3. Rookie of the year (Enter ROY)\n\n";
 
 $category = readline("Please select an award: ");
-
-$data = parseFile($category);
-
-
+$categories = [];
+$players = [];
+parseFile($category, $categories, $players);
 
 
 ?>
