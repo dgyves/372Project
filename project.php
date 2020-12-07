@@ -54,6 +54,11 @@ function parseFile($category){
 		if ($i == 0){
 			$categories = $data;
 
+
+		// first line is the list of different categories
+		if ($i == 0){
+			$categories = $data;
+
 		// rest of file is player data
 		} else {
 			$players[] = $data;
@@ -132,6 +137,17 @@ function compare ($player1, $player2){
 	return $playerComp;
 }
 
+
+	echo "\nCategories:\n";
+	//var_dump($categories);
+	for ($i = 2; $i < count($categories)-1; $i++){
+		echo $categories[$i]."\n";
+	}
+	echo "\nPlayers:\n";
+	for ($i = 0; $i < count($players)-1; $i++){
+		echo $players[$i][0]."\t".$players[$i][1]."\n";
+	}
+}
 
 // MAIN SCRIPT
 echo "Welcome to the 2019-2020 NBA Awards. The following awards are:
