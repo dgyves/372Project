@@ -69,7 +69,7 @@ function parseFile($category){
 		echo $categories[$i]."\n";
 	}
 	echo "\nNominated Players:\n";
-	for ($i = 0; $i < count($players)-1; $i++){
+	for ($i = 0; $i < count($players); $i++){
 		echo $players[$i][0]."\t".$players[$i][1]."\n";
 	}
 	$results = comp($players);
