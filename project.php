@@ -30,64 +30,60 @@
 * Params: array $arg
 */
 function parseFile($category){
-	$i = 0;
-	$data = array();
+	$myfile = "MVP.csv";	//default
 	
-	// Ask user for what stats to calculate
-	//if (sizeof($arg) != 2){
-	//	echo "Please only include a file name.\n";
-	//	die;
-	//}
-
-	$filename = $arg[1];
 	// Open file or return error message
-	//$myfile = fopen($filename+".csv", "r") or die("Unable to open file!");
 	if($category == "DPOY"){
 		$myfile = fopen("DPOY.csv", "r") or die("Unable to open file!");
-
 	} 
 	if($category == "MVP"){
 		$myfile = fopen("MVP.csv", "r") or die("Unable to open file!");
-
-
 	}
 	if ($category == "ROY"){
 		$myfile = fopen("ROY.csv", "r") or die("Unable to open file!");
-
 	}
 	
-	
+	$i = 0;
 
 	// Read one line until end-of-file
 	while(!feof($myfile)) {
-		//$line = fgets($myfile);
 		
-		// print file name
-		print_r(fgetcsv($myfile));
+		$data = fgetcsv($myfile);
 
+		// first line is the list of different categories
+		if ($i == 0){
+			$categories = $data;
+
+		// rest of file is player data
+		} else {
+			$players[] = $data;
+		}
+
+		//var_dump($data);
 		$i++;
 	}
 	fclose($myfile);
 
-	// check for error case k > n
-	if($k > $n){
-		die("Error: 'k' cannot be greater than 'n'.\n");
+	echo "\nCategories:\n";
+	//var_dump($categories);
+	for ($i = 2; $i < count($categories)-1; $i++){
+		echo $categories[$i]."\n";
 	}
-
-	return $data;
+	echo "\nPlayers:\n";
+	for ($i = 0; $i < count($players)-1; $i++){
+		echo $players[$i][0]."\t".$players[$i][1]."\n";
+	}
 }
 
 // MAIN SCRIPT
-
 echo "Welcome to the 2019-2020 NBA Awards. The following awards are:
 \n1. Most Valuable Player (Enter MVP)\n2. Defensive Player of the Year (Enter DPOY)
 3. Rookie of the year (Enter ROY)\n\n";
 
 $category = readline("Please select an award: ");
-
-$data = parseFile($category);
-
-
+$categories = [];
+$players = [];
+parseFile($category, $categories, $players);
 
 
 ?>
