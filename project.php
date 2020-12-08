@@ -72,7 +72,9 @@ function parseFile($category){
 	$results = comp($players);
 	for($i = 0; $i < count($players); $i++){
 		if ($results[$players[$i][0]] == max(array_values($results))){
-			echo"\n\nThe winner of the 2019-2020 NBA " . $category . " is: " . $players[$i][0] . " from the " . $players[$i][1];
+			echo"\n\nThe winner of the 2019-2020 NBA " . $category . " is: ";
+			echo $players[$i][0] . " from the " . $players[$i][1]."\n";
+			
 		}
 	}
 }
@@ -94,8 +96,11 @@ function comp($players){
 			}
 		}
 	}
-	return $results;
-}		
+		return $results;
+
+}
+	
+		
 	
 function compare ($player1, $player2){
 	$playerComp[0] = 0;
@@ -157,16 +162,124 @@ function getPlayers($page){
 	curl_close($curl);
 	return $result->data;
 }
+function mainMenu(){
+	echo "Welcome to the NBA Menu!";
+	echo "\nHere are our options:";
+	echo "\n\n1. NBA Awards (Enter awards)";
+	echo "\n\n2. NBA Teams (Enter teams)";
+	echo "\n\n3. NBA Players (Enter players)\n\n";
+
+	$option = readline("Please enter one of the options above or 'exit' to end program: ");
+	return $option;
+
+}
 
 // MAIN SCRIPT
-echo "Welcome to the 2019-2020 NBA Awards. The following awards are:
-\n1. Most Valuable Player (Enter MVP)\n2. Defensive Player of the Year (Enter DPOY)
-3. Rookie of the year (Enter ROY)\n\n";
 
-$category = readline("Please select an award: ");
-$categories = [];
-$players = [];
-parseFile($category, $categories, $players);
+while($option != "exit"){
+	$option = mainMenu();
+	if($option == "awards"){
+		$command = "none";
+		while($command != "exit"){
+			echo "\n\nWelcome to the 2019-2020 NBA Awards. The following awards are:";
+			echo"\n1. Most Valuable Player (Enter MVP)\n2. Defensive Player of the Year (Enter DPOY)";
+			echo "\n3. Rookie of the year (Enter ROY)\n\n";
+	
+			$category = readline("Please select an award: ");
+			$categories = [];
+			$players = [];
+			parseFile($category, $categories, $players);
+			echo "Would you like to select another reward?";
+			$command = readline("\nEnter 'exit' to return to the main"
+			. " menu or any other key to continue: ");
+
+			if ($command == "exit"){
+				$option = "menu";
+			}
+		}
+		
+	
+	}elseif ($option == "players"){
+		//Check for season averages
+		//https://www.balldontlie.io/api/v1/season_averages
+		//?season=2018 //specific season
+		//"https://www.balldontlie.io/api/v1/season_averages?player_ids[]=237" //Lebron Averages
+	
+		$command = "none";
+		$page = 1;
+		while ($command != "exit"){
+			echo "\n\nDisplaying Players (Page ".$page." out of 327):\n";
+	
+			$all_players = getPlayers($page);
+			
+	
+			for ($i = 0; $i < count($all_players)-1; $i++){
+				echo"\t".$all_players[$i]->first_name." ".$all_players[$i]->last_name."\n";
+				
+			}
+	
+			echo "Press < or > to change page.\n";
+			echo "Enter specific page between 0 and 327.\n";
+			echo "Type exit to change exit catalogue and return to main menu.\n";
+	
+			$command = readline("Command: ");
+	
+			if ($command == "<" && $page != 1){
+				$page--;
+			} elseif ($command == ">" && $page != 327){
+				$page++;
+			} elseif ($command == "<" && $page == 1){
+				$page = 327;
+			} elseif ($command == ">" && $page == 327){
+				$page = 1;
+			} elseif ($command == "exit"){
+				$option = "menu";
+			} else {
+				if (intval($command) >= 1 && intval($command) <= 327){
+					$page = intval($command);
+				} else {
+					echo "Error: Page number out of range!\n\n";
+					continue;
+				}
+		
+			}	
+			echo "\n";
+				
+	
+		}
+	}elseif ($option == "teams"){
+		$command = "none";
+		while ($command != "exit"){
+			echo "\nAll current NBA teams:\n\n";
+			$all_teams = getTeams();
+
+			foreach($all_teams as $team){
+				echo $team->id . ". " . $team->full_name . " (" . $team->abbreviation;
+				echo "):" . $team->division . " Division\n";
+			}
+
+			echo "\nType exit to change exit list of teams and return to main menu.\n";
+	
+			$command = readline("Command: ");
+
+			if($command == "exit"){
+				$option = "menu";
+			}
+
+		}
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
 
 //echo "\nCategories:\n";
 	//var_dump($categories);
@@ -179,51 +292,5 @@ parseFile($category, $categories, $players);
 //	}
 //}
 
-$all_teams = getTeams();
-
-//Check for season averages
-//https://www.balldontlie.io/api/v1/season_averages
-//?season=2018 //specific season
-//"https://www.balldontlie.io/api/v1/season_averages?player_ids[]=237" //Lebron Averages
-
-$command = "none";
-$page = 1;
-while ($command != "exit"){
-	echo "Displaying Players (Page ".$page." out of 327):\n";
-
-	$all_players = getPlayers($page);
-
-	for ($i = 0; $i < count($all_players)-1; $i++){
-		echo "\t".$all_players[$i]->first_name." ".$all_players[$i]->last_name."\n";
-		//echo $all_teams[$i]->conference."\n";
-	}
-
-	echo "Press < or > to change page.\n";
-	echo "Enter specific page between 0 and 327.\n";
-	echo "Type exit to change exit catalogue.\n";
-
-	$command = readline("Command: ");
-
-	if ($command == "<" && $page != 1){
-		$page--;
-	} elseif ($command == ">" && $page != 327){
-		$page++;
-	} elseif ($command == "<" && $page == 1){
-		$page = 327;
-	} elseif ($command == ">" && $page == 327){
-		$page = 1;
-	} elseif ($command == "exit"){
-		break;
-	} else {
-		if (intval($command) >= 1 && intval($command) <= 327){
-			$page = intval($command);
-		} else {
-			echo "Error: Page number out of range!\n\n";
-			continue;
-		}
-		
-	}
-	echo "\n";
-}
 
 ?>
