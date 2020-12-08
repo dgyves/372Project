@@ -25,8 +25,8 @@
 */
 
 /*
-* parseFile -- parses a file passed from command line argument
-* Params: array $arg
+* parseFile -- parses a file depending on user choice and calculates award winner through stat comparison
+* Params: $category - String determining which award to calculate
 */
 function parseFile($category){
 	$myfile = "MVP.csv";	//default
@@ -61,7 +61,6 @@ function parseFile($category){
 	}
 	fclose($myfile);
 	echo "\nCategories:\n";
-	//var_dump($categories);
 	for ($i = 2; $i < count($categories); $i++){
 		echo $categories[$i]."\n";
 	}
@@ -80,7 +79,9 @@ function parseFile($category){
 }
 
 /**
-*
+* Calculate a winner for NBA awards by comparing all players in every category
+* params: $players - Player mappings with stats as values
+* returns: $results - returns winner of award
 */
 function comp($players){
 	for($i = 0; $i < count($players); $i++){
@@ -96,12 +97,15 @@ function comp($players){
 			}
 		}
 	}
-		return $results;
-
+	return $results;
 }
 	
 		
-	
+/**
+* Returns array containing categories won between two players
+* params: $player1, $player2 - arrays containing stats in respective categories 
+* returns: $playerComp - array with number of winning categories between players
+*/
 function compare ($player1, $player2){
 	$playerComp[0] = 0;
 	$playerComp[1] = 0;
@@ -127,7 +131,9 @@ function compare ($player1, $player2){
 }
 
 /**
-*
+* Acquire team names using API through PHP's included Client URL methods and JSON Decoding
+* params: n/a
+* returns: $result->data - array object containing team data
 */
 function getTeams(){
 	$curl = curl_init();
@@ -145,7 +151,9 @@ function getTeams(){
 }
 
 /**
-*
+* Acquire player names using API through PHP's included Client URL methods and JSON Decoding
+* params: $page - integer indicating which page of players to show
+* returns: $result->data - array object containing player data
 */
 function getPlayers($page){
 	$curl = curl_init();
@@ -162,6 +170,12 @@ function getPlayers($page){
 	curl_close($curl);
 	return $result->data;
 }
+
+/**
+* Simple string script that dictates what information to display to user
+* params: n/a
+* returns: n/a
+*/
 function mainMenu(){
 	echo "Welcome to the NBA Menu!";
 	echo "\nHere are our options:";
@@ -175,7 +189,6 @@ function mainMenu(){
 }
 
 // MAIN SCRIPT
-
 while($option != "exit"){
 	$option = mainMenu();
 	if($option == "awards"){
@@ -198,7 +211,7 @@ while($option != "exit"){
 			}
 		}
 		
-	
+	// display players
 	}elseif ($option == "players"){
 		//Check for season averages
 		//https://www.balldontlie.io/api/v1/season_averages
@@ -212,14 +225,13 @@ while($option != "exit"){
 	
 			$all_players = getPlayers($page);
 			
-	
+			// display current page of players
 			for ($i = 0; $i < count($all_players)-1; $i++){
 				echo"\t".$all_players[$i]->first_name." ".$all_players[$i]->last_name."\n";
-				
 			}
 	
 			echo "Press < or > to change page.\n";
-			echo "Enter specific page between 0 and 327.\n";
+			echo "Enter specific page between 1 and 327.\n";
 			echo "Type exit to change exit catalogue and return to main menu.\n";
 	
 			$command = readline("Command: ");
@@ -241,12 +253,11 @@ while($option != "exit"){
 					echo "Error: Page number out of range!\n\n";
 					continue;
 				}
-		
 			}	
 			echo "\n";
-				
-	
 		}
+
+	// display teams
 	}elseif ($option == "teams"){
 		$command = "none";
 		while ($command != "exit"){
@@ -258,7 +269,7 @@ while($option != "exit"){
 				echo "):" . $team->division . " Division\n";
 			}
 
-			echo "\nType exit to change exit list of teams and return to main menu.\n";
+			echo "\nType 'exit' to change exit list of teams and return to main menu.\n";
 	
 			$command = readline("Command: ");
 
@@ -271,26 +282,4 @@ while($option != "exit"){
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-//echo "\nCategories:\n";
-	//var_dump($categories);
-//	for ($i = 2; $i < count($categories)-1; $i++){
-//		echo $categories[$i]."\n";
-//	}
-//	echo "\nPlayers:\n";
-//	for ($i = 0; $i < count($players)-1; $i++){
-//		echo $players[$i][0]."\t".$players[$i][1]."\n";
-//	}
-//}
-
-
 ?>
